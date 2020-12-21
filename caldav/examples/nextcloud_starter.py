@@ -6,7 +6,8 @@ Created on Sun Feb 16 20:43:02 2020
 """
 
 # https://github.com/python-caldav/caldav
-
+from datetime import datetime
+import sys
 import caldav
 from caldav.elements import dav
 
@@ -50,6 +51,36 @@ client = caldav.DAVClient(url)
 principal = client.principal()
 # get all available calendars (for this user)
 calendars = principal.calendars()
-print(calendars)
+if calendars:
+    ## Some calendar servers will include all calendars you have
+    ## access to in this list, and not only the calendars owned by
+    ## this principal.  TODO: see if it's possible to find a list of
+    ## calendars one has access to.
+    print("your principal has %i calendars:" % len(calendars))
+    for c in calendars:
+        calendar_url = c.url
+        print("    Name: %-20s  URL: %s" % (c.name, c.url))
+else:
+    print("your principal has no calendars")
+  
+    
+  
+    
+# check the calendar events and parse results..  
+events_fetched = calendars[0].date_search(
+    start=datetime.today(), end=datetime(2024, 1, 1), expand=True)
 
-# check the calendar events and parse results..
+
+
+next_appointment = events_fetched.pop()
+appointent_name = next_appointment.vobject_instance.vevent.summary.value
+
+print("Name: " + appointent_name)
+
+class Calendar:
+    def __init__(self):
+        self.eventname = appointent_name
+        
+    def getEventName(self):
+        return self.eventname
+
