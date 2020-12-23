@@ -89,6 +89,9 @@ class Calendar:
     def getNextAppointment(self):
         return self.eventname
     
+test = Calendar()
+print(test.getNextAppointment())
+    
     
 
 
