@@ -90,7 +90,5 @@ class Calendar:
         return self.eventname
     
     
-    
-calendar = Calendar()
-print("Next Appointment: " + calendar.getNextAppointment())
+
 
