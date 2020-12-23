@@ -4,7 +4,7 @@ from nextcloud_starter import Calendar
 class ManageAppointments(MycroftSkill):
     def __init__(self):
         MycroftSkill.__init__(self)
-        calendar = Calendar()
+        self.calendar = Calendar()
 
         
 
