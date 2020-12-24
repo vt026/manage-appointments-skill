@@ -15,6 +15,9 @@ from caldav.elements import dav
 
 
 class Calendar:
+    
+    appointent_name = None
+    
     def __init__(self):
         # Caldav url
         # import secret login code from local file here
@@ -64,7 +67,7 @@ class Calendar:
             print("your principal has %i calendars:" % len(calendars))
             for c in calendars:
                 calendar_url = c.url
-                print("    Name: %-20s  URL: %s" % (c.name, c.url))
+                print("Name: %-20s  URL: %s" % (c.name, c.url))
         else:
             print("your principal has no calendars")
           
@@ -78,21 +81,25 @@ class Calendar:
         
         if len(events_fetched)!=0:
             next_appointment = events_fetched.pop()
-            appointent_name = next_appointment.vobject_instance.vevent.summary.value
+            self.appointent_name = next_appointment.vobject_instance.vevent.summary.value
         
-            print("Name: " + appointent_name)
-            self.eventname = appointent_name
+            print("Name: " + self.appointent_name)
+            self.eventname = self.appointent_name
         else:
             self.eventname ="no events";
             print("No events")
+            
         
         
     def getNextAppointment(self):
         return self.eventname
     
+    def getNextAppointmentName(self):
+        return self.appointent_name
+    
 test = Calendar()
 print(test.getNextAppointment())
-    
+print(test.getNextAppointmentName())
     
 
 
