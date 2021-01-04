@@ -81,25 +81,40 @@ class Calendar:
         
         if len(events_fetched)!=0:
             next_appointment = events_fetched.pop()
-            self.appointent_name = next_appointment.vobject_instance.vevent.summary.value
-        
-            print("Name: " + self.appointent_name)
-            self.eventname = self.appointent_name
+            self.nextEvent= True
+            self.event = next_appointment.instance.vevent
+            self.appointent_name = self.event.summary.value
+            self.appointment_start = self.event.dtstart.value
+            #self.appointment_end = self.event.dtend.value
+            
+            if self.event.dtstart.value.strftime("%H:%M") == "00:00":
+                #the next event is all day
+                self.appointment_date = self.appointment_start.strftime("%B %d, %Y")
+                self.appointment_time = " all day long"
+                print("all day")
+            else:
+                #the next event has a specific time
+                self.appointment_date = self.appointment_start.strftime("%B %d, %Y")
+                self.appointment_time = self.appointment_start.strftime(" at %I:%M %p")
+            
         else:
-            self.eventname ="no events";
+            #there are no events in the calendar
+            self.nextEvent = False
             print("No events")
             
         
         
     def getNextAppointment(self):
-        return self.eventname
+        if(self.nextEvent==False):
+            return "There are no upcoming events"
+        else:
+            return "Your next appointment is on " + self.appointment_date + self.appointment_time + " and is entitled " + self.appointent_name
     
-    def getNextAppointmentName(self):
-        return self.appointent_name
+    
     
 test = Calendar()
 print(test.getNextAppointment())
-print(test.getNextAppointmentName())
+
     
 
 
