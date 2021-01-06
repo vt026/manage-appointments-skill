@@ -1,15 +1,17 @@
-# from mycroft import MycroftSkill, intent_file_handler
+from mycroft import MycroftSkill, intent_file_handler
 from datetime import datetime
 import sys
 import caldav
 from caldav.elements import dav
+    
 
 
-class Calendar:
+class ManageAppointments(MycroftSkill):
     
     appointent_name = None
-    
+        
     def __init__(self):
+        MycroftSkill.__init__(self) 
         # Caldav url
         # import secret login code from local file here
         with open('pw.txt','r') as file:
@@ -93,31 +95,25 @@ class Calendar:
             self.nextEvent = False
             print("No events")
             
-        
-        
+            
     def getNextAppointment(self):
         if(self.nextEvent==False):
             return "There are no upcoming events"
         else:
             return "Your next appointment is on " + self.appointment_date + self.appointment_time + " and is entitled " + self.appointent_name
     
-
-
-class ManageAppointments(MycroftSkill):
-        
-    def __init__(self):
-        MycroftSkill.__init__(self)        
+    def overwriteDialog(self):
+        self.f = open("locale/en-us/appointments.manage.dialog" , "w")
+        self.f.write(self.getNextAppointment())
+        self.f.close()
               
 
     @intent_file_handler('appointments.manage.intent')
     def handle_appointments_manage(self, message):
-        cal = Calendar()
-        self.speak_dialog(cal.getNextAppointment())
+        self.speak_dialog(self.getNextAppointment())
 
 def create_skill():
     return ManageAppointments()
 
 
-test = Calendar()
-print(test.getNextAppointment())
 
