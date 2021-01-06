@@ -11,8 +11,16 @@ class ManageAppointments(MycroftSkill):
     appointent_name = None
         
     def __init__(self):
-        MycroftSkill.__init__(self) 
-        # Caldav url
+        MycroftSkill.__init__(self)        
+              
+
+    @intent_file_handler('appointments.manage.intent')
+    def handle_appointments_manage(self, message):
+        self.speak_dialog()
+        
+        
+    def loadCalendars(self):
+         # Caldav url
         # import secret login code from local file here
         with open('pw.txt','r') as file:
             data = file.read().splitlines()
@@ -94,8 +102,7 @@ class ManageAppointments(MycroftSkill):
             #there are no events in the calendar
             self.nextEvent = False
             print("No events")
-            
-            
+
     def getNextAppointment(self):
         if(self.nextEvent==False):
             return "There are no upcoming events"
@@ -106,11 +113,7 @@ class ManageAppointments(MycroftSkill):
         self.f = open("locale/en-us/appointments.manage.dialog" , "w")
         self.f.write(self.getNextAppointment())
         self.f.close()
-              
 
-    @intent_file_handler('appointments.manage.intent')
-    def handle_appointments_manage(self, message):
-        self.speak_dialog(self.getNextAppointment())
 
 def create_skill():
     return ManageAppointments()
