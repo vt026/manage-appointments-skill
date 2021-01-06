@@ -7,8 +7,6 @@ from caldav.elements import dav
 
 
 class ManageAppointments(MycroftSkill):
-    
-    appointent_name = None
         
     def __init__(self):
         MycroftSkill.__init__(self)        
@@ -23,11 +21,13 @@ class ManageAppointments(MycroftSkill):
     def loadCalendars(self):
          # Caldav url
         # import secret login code from local file here
-        with open('pw.txt','r') as file:
-            data = file.read().splitlines()
         
-        username = data[0]
-        password = data[1]
+        
+        
+        
+        username = 
+        password = 
+
         
         url = "https://" + username + ":" + password + "@next.social-robot.info/nc/remote.php/dav"
         
