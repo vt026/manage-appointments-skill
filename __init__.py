@@ -22,11 +22,11 @@ class ManageAppointments(MycroftSkill):
          # Caldav url
         # import secret login code from local file here
         
+        with open('pw.txt','r') as file:
+            data = file.read().splitlines()
         
-        
-        
-        username = 
-        password = 
+        username = data[0]
+        password = data[1]
 
         
         url = "https://" + username + ":" + password + "@next.social-robot.info/nc/remote.php/dav"
