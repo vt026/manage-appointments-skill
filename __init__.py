@@ -110,11 +110,6 @@ class ManageAppointments(MycroftSkill):
             return "There are no upcoming events"
         else:
             return "Your next appointment is on " + self.appointment_date + self.appointment_time + " and is entitled " + self.appointent_name
-    
-    def overwriteDialog(self):
-        self.f = open("locale/en-us/appointments.manage.dialog" , "w")
-        self.f.write(self.getNextAppointment())
-        self.f.close()
 
 
 def create_skill():
