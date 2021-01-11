@@ -19,7 +19,7 @@ class ManageAppointments(MycroftSkill):
         
         
     def loadCalendars(self):
-         # Caldav url
+        # Caldav url
         # import secret login code from local file here
         
         with open('pw.txt','r') as file:
