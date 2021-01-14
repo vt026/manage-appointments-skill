@@ -14,9 +14,10 @@ class ManageAppointments(MycroftSkill):
         
     @intent_handler('appointments.manage.date.intent')
     def handle_date_search(self, message):
-        user_date = message.data.get('type')
-        if user_date is not None:
-            self.speak_dialog( user_date)
+        day = message.data.get('day')
+        month = message.data.get('month')
+        if (day is not None and month is not None):
+            self.speak_dialog("On the " + day + " of " + month + " you have the following appointments")
         else:
             self.speak_dialog("hello")
         
