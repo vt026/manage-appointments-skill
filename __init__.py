@@ -14,7 +14,12 @@ class ManageAppointments(MycroftSkill):
         
     @intent_handler('appointments.manage.date.intent')
     def handle_date_search(self, message):
-        self.speak_dialog("Hello")
+        user_date = message.data.get('type')
+        if user_date is not None:
+            self.speak_dialog( user_date)
+        else:
+            self.speak_dialog("hello")
+        
 
     @intent_file_handler('appointments.manage.intent')
     def handle_appointments_manage(self, message):
