@@ -1,4 +1,4 @@
-from mycroft import MycroftSkill, intent_file_handler
+from mycroft import MycroftSkill, intent_file_handler, intent_handler
 from datetime import datetime
 import sys
 import caldav
@@ -11,6 +11,10 @@ class ManageAppointments(MycroftSkill):
     def __init__(self):
         MycroftSkill.__init__(self)        
               
+        
+    @intent_handler('appointments.manage.date.intent')
+    def handle_date_search(self, message):
+        self.speak_dialog("Hello")
 
     @intent_file_handler('appointments.manage.intent')
     def handle_appointments_manage(self, message):
