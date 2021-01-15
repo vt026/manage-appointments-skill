@@ -39,7 +39,7 @@ class ManageAppointments(MycroftSkill):
         password = data[1]
 
         
-        url = "https://" + username + ":" + password + "@next.social-robot.info/nc/remote.php/dav"
+        url = "https://" + self.getUsername() + ":" + self.getPassword() + "@next.social-robot.info/nc/remote.php/dav"
         
         #vcal = """BEGIN:VCALENDAR
         #VERSION:2.0
@@ -126,14 +126,8 @@ class ManageAppointments(MycroftSkill):
     def getAppointmentsOnDate(self,day,month):
         year = 2021
             
-        with open('pw.txt','r') as file:
-            data = file.read().splitlines()
         
-        username = data[0]
-        password = data[1]
-
-        
-        url = "https://" + username + ":" + password + "@next.social-robot.info/nc/remote.php/dav"
+        url = "https://" + self.getUsername() + ":" + self.getPassword() + "@next.social-robot.info/nc/remote.php/dav"
         
         #vcal = """BEGIN:VCALENDAR
         #VERSION:2.0
@@ -185,7 +179,19 @@ class ManageAppointments(MycroftSkill):
         appointent_name = event.summary.value
         return "On the " +str(day) + " of " + str(month) + " you have the following appointments: " + appointent_name
         
-
+    def getUsername(self):
+        with open('pw.txt','r') as file:
+            data = file.read().splitlines()
+        
+        username = data[0]
+        return username
+    
+    def getPassword(self):
+        with open('pw.txt','r') as file:
+            data = file.read().splitlines()
+        
+        password = data[1]
+        return password
 
 def create_skill():
     return ManageAppointments()
