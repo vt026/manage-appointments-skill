@@ -24,13 +24,42 @@ class ManageAppointments(MycroftSkill):
 
     @intent_file_handler('appointments.manage.intent')
     def handle_appointments_manage(self, message):
+        self.loadCalendars()
         self.speak_dialog(self.getNextAppointment())
         
-
-    def getNextAppointment(self):
-        #returns the next appointment
         
-        events_fetched = self.loadEvents(datetime.today().year,datetime.today().month,datetime.today().day,2024,1,1)
+    def loadCalendars(self):
+        # Caldav url
+        # import secret login code from local file here
+    
+
+        url = "https://" + self.getUsername() + ":" + self.getPassword() + "@next.social-robot.info/nc/remote.php/dav"
+        
+
+        client = caldav.DAVClient(url)
+        principal = client.principal()
+        # get all available calendars (for this user)
+        calendars = principal.calendars()
+        if calendars:
+            ## Some calendar servers will include all calendars you have
+            ## access to in this list, and not only the calendars owned by
+            ## this principal.  TODO: see if it's possible to find a list of
+            ## calendars one has access to.
+            print("your principal has %i calendars:" % len(calendars))
+            for c in calendars:
+                calendar_url = c.url
+                print("Name: %-20s  URL: %s" % (c.name, c.url))
+        else:
+            print("your principal has no calendars")
+          
+            
+          
+            
+        # check the calendar events and parse results..  
+        events_fetched = calendars[0].date_search(
+            start=datetime.today(), end=datetime(2024, 1, 1), expand=True)
+        
+        
         
         
         if len(events_fetched)!=0:
@@ -55,7 +84,9 @@ class ManageAppointments(MycroftSkill):
             #there are no events in the calendar
             self.nextEvent = False
             print("No events")
-        
+
+    def getNextAppointment(self):
+        #returns the next appointment
         if(self.nextEvent==False):
             return "There are no upcoming events"
         else:
@@ -64,15 +95,9 @@ class ManageAppointments(MycroftSkill):
     def getAppointmentsOnDate(self,day,month):
         year = datetime.today().year
                 
-        events_fetched = self.loadEvents(year,month,day,year,month,day)
-        
-        next_appointment = events_fetched.pop()
-        event = next_appointment.instance.vevent
-        appointent_name = event.summary.value
-        return "On the " +str(day) + " of " + str(month) + " you have the following appointments: " + appointent_name
-    
-    def loadEvents(self , fromYear, fromMonth, fromDay, toYear, toMonth, toDay):
         url = "https://" + self.getUsername() + ":" + self.getPassword() + "@next.social-robot.info/nc/remote.php/dav"
+        
+
         client = caldav.DAVClient(url)
         principal = client.principal()
         # get all available calendars (for this user)
@@ -90,9 +115,12 @@ class ManageAppointments(MycroftSkill):
             print("your principal has no calendars")
             
         events_fetched = calendars[0].date_search(
-            start=datetime(fromYear,fromMonth,fromDay), end=datetime(toYear,toMonth,toDay+1), expand=True)
+            start=datetime(year,month,day), end=datetime(year,month,day+1), expand=True)
         
-        return events_fetched
+        next_appointment = events_fetched.pop()
+        event = next_appointment.instance.vevent
+        appointent_name = event.summary.value
+        return "On the " +str(day) + " of " + str(month) + " you have the following appointments: " + appointent_name
         
     def getUsername(self):
         with open('pw.txt','r') as file:
