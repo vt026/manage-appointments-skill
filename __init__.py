@@ -15,7 +15,7 @@ class ManageAppointments(MycroftSkill):
     @intent_handler('appointments.manage.date.intent')
     def handle_date_search(self, message):
         day = message.data.get('day')
-        month = message.data.get('month')
+        month = self.StringToInt(message.data.get('month'))
         if (day is not None and month is not None):
             self.speak_dialog(self.getAppointmentsOnDate(int(day),int(month)))
         else:
@@ -93,6 +93,34 @@ class ManageAppointments(MycroftSkill):
             start=datetime(fromYear,fromMonth,fromDay), end=datetime(toYear,toMonth,toDay+1), expand=True)
         
         return events_fetched
+    
+    def StringToInt(self, month):
+
+        if month == 'january' or month == 'January':
+            return 1
+        if month == 'february' or month == 'February':
+            return 2
+        if month == 'march' or month == 'March':
+            return 3
+        if month == 'april' or month == 'April':
+            return 4
+        if month == 'may' or month == 'May':
+            return 5
+        if month == 'june' or month == 'June':
+            return 6
+        if month == 'july' or month == 'July':
+            return 7
+        if month == 'august' or month == 'August':
+            return 8
+        if month == 'september' or month == 'September':
+            return 9
+        if month == 'october' or month == 'October':
+            return 10
+        if month == 'november' or month == 'November':
+            return 11
+        if month == 'december' or month == 'December':
+            return 12
+            
         
     def getUsername(self):
         with open('pw.txt','r') as file:
