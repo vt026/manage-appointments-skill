@@ -66,10 +66,19 @@ class ManageAppointments(MycroftSkill):
                 
         events_fetched = self.loadEvents(year,month,day,year,month,day)
         
-        next_appointment = events_fetched.pop()
-        event = next_appointment.instance.vevent
-        appointent_name = event.summary.value
-        return "On the " +str(day) + " of " + str(month) + " you have the following appointments: " + appointent_name
+        if(len(events_fetched)!=0):
+            result= "On the " +str(day) + " of " + str(month) + " you have the following appointments: "
+            for event in events_fetched:
+                myEvents = event.instance.vevent
+                appointent_name = myEvents.summary.value
+                result = result + appointent_name  +", "
+            
+            return result
+        else:
+            next_appointment = events_fetched.pop()
+            event = next_appointment.instance.vevent
+            appointent_name = event.summary.value
+            return "On the " +str(day) + " of " + str(month) + " you have the following appointment: " + appointent_name
     
     def loadEvents(self , fromYear, fromMonth, fromDay, toYear, toMonth, toDay):
         url = "https://" + self.getUsername() + ":" + self.getPassword() + "@next.social-robot.info/nc/remote.php/dav"
