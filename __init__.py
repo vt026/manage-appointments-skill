@@ -49,7 +49,7 @@ class ManageAppointments(MycroftSkill):
             else:
                 #the next event has a specific time
                 self.appointment_date = self.appointment_start.strftime("%B %d, %Y")
-                self.appointment_time = self.appointment_start.strftime(" at %I:%M %p")
+                self.appointment_time = " at " + str(self.appointment_start.hour+1) + self.appointment_start.strftime(":%M %p")
             
         else:
             #there are no events in the calendar
