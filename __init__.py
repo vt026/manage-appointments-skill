@@ -31,10 +31,10 @@ class ManageAppointments(MycroftSkill):
         #returns the next appointment
         
         events_fetched = self.loadEvents(datetime.today().year,datetime.today().month,datetime.today().day,2024,1,1)
-        
+        events_fetched.sort(key=lambda x: x.instance.vevent.dtstart.value.strftime("%Y-%m-%d"))
         
         if len(events_fetched)!=0:
-            next_appointment = events_fetched.pop()
+            next_appointment = events_fetched[0]
             self.nextEvent= True
             self.event = next_appointment.instance.vevent
             self.appointent_name = self.event.summary.value
