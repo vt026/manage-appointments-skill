@@ -65,21 +65,20 @@ class ManageAppointments(MycroftSkill):
         year = datetime.today().year
                 
         events_fetched = self.loadEvents(year,month,day,year,month,day)
-        
-        if(len(events_fetched)!=0):
-            result= "On the " +str(day) + ". of " + self.convertMonth(month) + " you have the following appointments: "
-            for event in events_fetched:
-                myEvents = event.instance.vevent
-                appointent_name = myEvents.summary.value
-                result = result + appointent_name  +", "
-            
-            return result
+        if events_fetched == 0:
+            return "This is not a day!"
         else:
-            next_appointment = events_fetched.pop()
-            event = next_appointment.instance.vevent
-            appointent_name = event.summary.value
-            return "On the " +str(day) + ". of " + self.convertMonth(month) + " you have the following appointment: " + appointent_name
-      
+            if(len(events_fetched)!=0):
+                result= "On the " +str(day) + ". of " + self.convertMonth(month) + " you have the following appointments: "
+                for event in events_fetched:
+                    myEvents = event.instance.vevent
+                    appointent_name = myEvents.summary.value
+                    result = result + appointent_name  +", "
+                
+                return result
+            else:
+                return "On the " +str(day) + ". of " + self.convertMonth(month) + " you have no appointments."
+    
     def loadEvents(self , fromYear, fromMonth, fromDay, toYear, toMonth, toDay):
         url = "https://" + self.getUsername() + ":" + self.getPassword() + "@next.social-robot.info/nc/remote.php/dav"
         client = caldav.DAVClient(url)
@@ -97,12 +96,13 @@ class ManageAppointments(MycroftSkill):
                 print("Name: %-20s  URL: %s" % (c.name, c.url))
         else:
             print("your principal has no calendars")
-            
-        events_fetched = calendars[0].date_search(
-            start=datetime(fromYear,fromMonth,fromDay), end=datetime(toYear,toMonth,toDay+1), expand=True)
-        
-        return events_fetched
-    
+        try:     
+            events_fetched = calendars[0].date_search(
+                start=datetime(fromYear,fromMonth,fromDay), end=datetime(toYear,toMonth,toDay+1), expand=True)
+            return events_fetched
+        except ValueError:
+            return 0
+   
     def convertMonth(self, month):
 
         if month == 'january' or month == 'January':
