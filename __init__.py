@@ -15,7 +15,7 @@ class ManageAppointments(MycroftSkill):
     @intent_handler('appointments.manage.date.intent')
     def handle_date_search(self, message):
         day = message.data.get('day')
-        month = self.StringToInt(message.data.get('month'))
+        month = self.convertMonth(message.data.get('month'))
         if (day is not None and month is not None):
             self.speak_dialog(self.getAppointmentsOnDate(int(day),int(month)))
         else:
@@ -67,7 +67,7 @@ class ManageAppointments(MycroftSkill):
         events_fetched = self.loadEvents(year,month,day,year,month,day)
         
         if(len(events_fetched)!=0):
-            result= "On the " +str(day) + " of " + str(month) + " you have the following appointments: "
+            result= "On the " +str(day) + ". of " + self.convertMonth(month) + " you have the following appointments: "
             for event in events_fetched:
                 myEvents = event.instance.vevent
                 appointent_name = myEvents.summary.value
@@ -78,8 +78,8 @@ class ManageAppointments(MycroftSkill):
             next_appointment = events_fetched.pop()
             event = next_appointment.instance.vevent
             appointent_name = event.summary.value
-            return "On the " +str(day) + " of " + str(month) + " you have the following appointment: " + appointent_name
-    
+            return "On the " +str(day) + ". of " + self.convertMonth(month) + " you have the following appointment: " + appointent_name
+      
     def loadEvents(self , fromYear, fromMonth, fromDay, toYear, toMonth, toDay):
         url = "https://" + self.getUsername() + ":" + self.getPassword() + "@next.social-robot.info/nc/remote.php/dav"
         client = caldav.DAVClient(url)
@@ -103,32 +103,58 @@ class ManageAppointments(MycroftSkill):
         
         return events_fetched
     
-    def StringToInt(self, month):
+    def convertMonth(self, month):
 
         if month == 'january' or month == 'January':
             return 1
-        if month == 'february' or month == 'February':
+        elif month == 'february' or month == 'February':
             return 2
-        if month == 'march' or month == 'March':
+        elif month == 'march' or month == 'March':
             return 3
-        if month == 'april' or month == 'April':
+        elif month == 'april' or month == 'April':
             return 4
-        if month == 'may' or month == 'May':
+        elif month == 'may' or month == 'May':
             return 5
-        if month == 'june' or month == 'June':
+        elif month == 'june' or month == 'June':
             return 6
-        if month == 'july' or month == 'July':
+        elif month == 'july' or month == 'July':
             return 7
-        if month == 'august' or month == 'August':
+        elif month == 'august' or month == 'August':
             return 8
-        if month == 'september' or month == 'September':
+        elif month == 'september' or month == 'September':
             return 9
-        if month == 'october' or month == 'October':
+        elif month == 'october' or month == 'October':
             return 10
-        if month == 'november' or month == 'November':
+        elif month == 'november' or month == 'November':
             return 11
-        if month == 'december' or month == 'December':
+        elif month == 'december' or month == 'December':
             return 12
+        elif month == 1:
+            return "January"
+        elif month == 2:
+            return "February"
+        elif month == 3:
+            return "March"
+        elif month == 4:
+            return "April"
+        elif month == 5:
+            return "March"
+        elif month == 6:
+            return "June"
+        elif month == 7:
+            return "July"
+        elif month == 8:
+            return "August"
+        elif month == 9:
+            return "September"
+        elif month == 10:
+            return "October"
+        elif month == 11:
+            return "November"
+        elif month == 12:
+            return "December"
+        else:
+            return 0
             
         
     def getUsername(self):
