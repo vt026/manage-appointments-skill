@@ -29,13 +29,20 @@ class ManageAppointments(MycroftSkill):
         
     @intent_file_handler('appointments.manage.newEvent.intent')
     def handle_createNewEvent(self,message):
+        day = self.convertOrdinalToCardinalNumber(message.data.get('day'))
+        month = self.convertMonthToInt(message.data.get('month'))
         eventname = self.get_response('how do you want to name the nex appointment?')
-        startDate = self.get_response('When does the appointment start?')
-        starteDate = self.parseTime(startDate)
-        endDate = self.get_response('When does the appointment end?')
-        endDate = self.parseTime(endDate)
-        self.speak_dialog("The name of the new appointment is: " + eventname)
         
+        startDate = self.get_response('When does the appointment start?')
+        startHour = self.getHour(startDate)
+        startMin = self.getMinutes(startDate)
+        endDate = self.get_response('When does the appointment end?')
+        endHour = self.getHour(endDate)
+        endMin = self.getMinutes(endDate)
+        
+        
+        self.createNewEvent(eventname,month,day,int(startHour),startMin,int(endHour),endMin)
+        self.speak_dialog("The appointment " + eventname + "was succesfully created")
 
     def getNextAppointment(self):
         #returns the next appointment
@@ -223,12 +230,26 @@ END:VCALENDAR
         else:
             return int(ordinalString[0])
         
-    def parseDate(self, timeString):
-        result = ""
+    def getHour(self, string):
+        if(string.startswith("at")):
+            result = string.replace("at","",1)
+            if(result[2] != ":"):
+                return result[0:3]
+            else:
+                return result[0:2]
+            
+    def getMinutes(self, string):
+        if(string.startswith("at ")):
+            result = string.replace("at","",1)
         
-        
-        
-        return result
+        if len(result)==5:
+            result = result[3:5]
+        elif len(result) == 6:
+            result = result[4:6]
+        else:
+            result = "00"
+
+        return int(result)
         
         
 
