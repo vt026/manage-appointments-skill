@@ -166,6 +166,19 @@ class ManageAppointments(MycroftSkill):
             return int(ordinalString[0])
         
         
+    
+    def convertCardinalNumberToOrdinalNumber(self,num):
+        SUFFIXES = {1: 'st', 2: 'nd', 3: 'rd'}
+        # I'm checking for 10-20 because those are the digits that
+        # don't follow the normal counting scheme. 
+        if 10 <= num % 100 <= 20:
+            suffix = 'th'
+        else:
+            # the second parameter is a default.
+            suffix = SUFFIXES.get(num % 10, 'th')
+        return str(num) + suffix
+        
+        
 
         
             
