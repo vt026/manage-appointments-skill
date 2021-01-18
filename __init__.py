@@ -44,66 +44,110 @@ class ManageAppointments(MycroftSkill):
         
         self.createNewEvent(eventname,month,day,int(startHour),startMin,int(endHour),endMin)
         self.speak_dialog("The appointment " + eventname + "  was succesfully created")
-
+    
     def getNextAppointment(self):
+        '''Notallday wird zuerst ausgegeben!
+        
+        '''
         #returns the next appointment
         
         events_fetched = self.loadEvents(datetime.today().year,datetime.today().month,datetime.today().day,2024,1,1)
         events_fetched.sort(key=lambda x: x.instance.vevent.dtstart.value.strftime("%Y-%m-%d"))
         
+        
         if len(events_fetched)!=0:
-            next_appointment = events_fetched[0]
-            self.nextEvent= True
-            self.event = next_appointment.instance.vevent
-            self.appointent_name = self.event.summary.value
-            self.appointment_start = self.event.dtstart.value
-            #self.appointment_end = self.event.dtend.value
+            events = []
+            for event in events_fetched:
+                if events_fetched[0].instance.vevent.dtstart.value.strftime("%Y-%m-%d") == event.instance.vevent.dtstart.value.strftime("%Y-%m-%d"):
+                    events.append(event)
+            events_allDay = []
+            events_notAllDay = []
+            for i in events_fetched:
+                if i.instance.vevent.dtstart.value.strftime("%H:%M") == "00:00":
+                    events_allDay.append(i)
+                else:
+                    events_notAllDay.append(i)
+            events_notAllDay.sort(key=lambda x: x.instance.vevent.dtstart.value)
             
-            if self.event.dtstart.value.strftime("%H:%M") == "00:00":
-                #the next event is all day
-                self.appointment_date = self.appointment_start.strftime("%B %d, %Y")
-                self.appointment_time = " all day long"
-                print("all day")
+            for i in events_allDay:
+                print(i.instance.vevent.summary.value)
+            for i in events_notAllDay:
+                print(i.instance.vevent.summary.value)
+            
+            if len(events_allDay) == 0 and len(events_notAllDay) == 0:
+                return "There are no upcoming events"         
             else:
-                #the next event has a specific time
-                self.appointment_date = self.appointment_start.strftime("%B %d, %Y")
-                self.appointment_time = " at " + str(self.appointment_start.hour+1) + self.appointment_start.strftime(":%M %p")
-            
+                if len(events_notAllDay) != 0:
+                    next_appointment = events_notAllDay[0]
+                    self.nextEvent= True
+                    self.event = next_appointment.instance.vevent
+                    self.appointent_name = self.event.summary.value
+                    self.appointment_start = self.event.dtstart.value
+                    self.appointment_date = self.appointment_start.strftime("%B %d, %Y")
+                    self.appointment_time = " at " + str(self.appointment_start.hour+1) + self.appointment_start.strftime(":%M %p")
+                    
+                    return "Your next appointment is on " + self.appointment_date + self.appointment_time + " and is entitled " + self.appointent_name
+                else:
+                    name = events_notAllDay[0].instance.vevent.summary.value
+                    date = events_notAllDay[0].instance.vevent.dtstart.strftime("%B %d, %Y")
+                    time = " all day long"
+                    print("all day") 
+                    return "Your next appointment is on " + date + time + " and is entitled " + name
+        
         else:
             #there are no events in the calendar
             self.nextEvent = False
             print("No events")
         
-        if(self.nextEvent==False):
-            return "There are no upcoming events"
-        else:
-            return "Your next appointment is on " + self.appointment_date + self.appointment_time + " and is entitled " + self.appointent_name
+        
+        
         
     def getAppointmentsOnDate(self,day,month):
         year = datetime.today().year
-                
+        
         events_fetched = self.loadEvents(year,month,day,year,month,day)
+        events_allDay = []
+        events_notAllDay = []
+        for i in events_fetched:
+            if i.instance.vevent.dtstart.value.strftime("%H:%M") == "00:00":
+                events_allDay.append(i)
+            else:
+                events_notAllDay.append(i)
+        events_notAllDay.sort(key=lambda x: x.instance.vevent.dtstart.value)
+        
         if events_fetched == 0:
             return "This is not a day!"
         else:
-            if(len(events_fetched)==1):
+            if len(events_allDay) == 0 and len(events_notAllDay) == 0:
+                return "On the " +str(day) + ". of " + self.convertIntToMonth(month) + " you have no appointments."
+            elif (len(events_allDay) == 1 and len(events_notAllDay) == 0) or (len(events_allDay) == 0 and len(events_notAllDay) == 1):
                 result= "On the " +str(day) + ". of " + self.convertIntToMonth(month) + " you have the following appointment: "
-
-                myEvent = events_fetched[0].instance.vevent
-                appointent_name = myEvent.summary.value
-                result = result + appointent_name
+                
+                if len(events_allDay) == 1:
+                    myEvent = events_allDay[0].instance.vevent
+                    appointent_name = myEvent.summary.value
+                    result = result + appointent_name
+                else:
+                    myEvent = events_notAllDay[0].instance.vevent
+                    appointent_name = myEvent.summary.value
+                    result = result + appointent_name
                 
                 return result
-            elif(len(events_fetched)!=0):
+            
+            else:
                 result= "On the " +str(day) + ". of " + self.convertIntToMonth(month) + " you have the following appointments: "
-                for event in events_fetched:
+            
+                for event in events_allDay:
+                    myEvents = event.instance.vevent
+                    appointent_name = myEvents.summary.value
+                    result = result + appointent_name  +", "
+                    
+                for event in events_notAllDay:
                     myEvents = event.instance.vevent
                     appointent_name = myEvents.summary.value
                     result = result + appointent_name  +", "
                 
                 return result
-            else:
-                return "On the " +str(day) + ". of " + self.convertIntToMonth(month) + " you have no appointments."
     
     
     def createNewEvent(self,name,month,day,startHour,startMin,endHour,endMin):
