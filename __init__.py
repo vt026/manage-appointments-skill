@@ -31,7 +31,9 @@ class ManageAppointments(MycroftSkill):
     def handle_createNewEvent(self,message):
         eventname = self.get_response('how do you want to name the nex appointment?')
         startDate = self.get_response('When does the appointment start?')
-        emdDate = self.get_response('When does the appointment end?')
+        starteDate = self.parseTime(startDate)
+        endDate = self.get_response('When does the appointment end?')
+        endDate = self.parseTime(endDate)
         self.speak_dialog("The name of the new appointment is: " + eventname)
         
 
@@ -220,6 +222,13 @@ END:VCALENDAR
             return int(ordinalString[0:2])
         else:
             return int(ordinalString[0])
+        
+    def parseDate(self, timeString):
+        result = ""
+        
+        
+        
+        return result
         
         
 
