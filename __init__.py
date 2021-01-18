@@ -14,8 +14,8 @@ class ManageAppointments(MycroftSkill):
         
     @intent_handler('appointments.manage.date.intent')
     def handle_date_search(self, message):
-        day = message.data.get('day')
-        month = self.convertMonth(message.data.get('month'))
+        day = self.convertOrdinalToCardinalNumber(message.data.get('day'))
+        month = self.convertMonthToInt(message.data.get('month'))
         if (day is not None and month is not None):
             self.speak_dialog(self.getAppointmentsOnDate(int(day),int(month)))
         else:
@@ -69,7 +69,7 @@ class ManageAppointments(MycroftSkill):
             return "This is not a day!"
         else:
             if(len(events_fetched)!=0):
-                result= "On the " +str(day) + ". of " + self.convertMonth(month) + " you have the following appointments: "
+                result= "On the " +str(day) + ". of " + self.convertIntToMonth(month) + " you have the following appointments: "
                 for event in events_fetched:
                     myEvents = event.instance.vevent
                     appointent_name = myEvents.summary.value
@@ -77,7 +77,7 @@ class ManageAppointments(MycroftSkill):
                 
                 return result
             else:
-                return "On the " +str(day) + ". of " + self.convertMonth(month) + " you have no appointments."
+                return "On the " +str(day) + ". of " + self.convertIntToMonth(month) + " you have no appointments."
     
     def loadEvents(self , fromYear, fromMonth, fromDay, toYear, toMonth, toDay):
         url = "https://" + self.getUsername() + ":" + self.getPassword() + "@next.social-robot.info/nc/remote.php/dav"
@@ -103,33 +103,36 @@ class ManageAppointments(MycroftSkill):
         except ValueError:
             return 0
    
-    def convertMonth(self, month):
-
-        if month == 'january' or month == 'January':
+    def convertMonthToInt(self, month):
+        if month.lower() == 'january':
             return 1
-        elif month == 'february' or month == 'February':
+        elif month.lower() == 'february':
             return 2
-        elif month == 'march' or month == 'March':
+        elif month.lower() == 'march':
             return 3
-        elif month == 'april' or month == 'April':
+        elif month.lower() == 'april':
             return 4
-        elif month == 'may' or month == 'May':
+        elif month.lower() == 'may':
             return 5
-        elif month == 'june' or month == 'June':
+        elif month.lower() == 'june':
             return 6
-        elif month == 'july' or month == 'July':
+        elif month.lower() == 'july':
             return 7
-        elif month == 'august' or month == 'August':
+        elif month.lower() == 'august':
             return 8
-        elif month == 'september' or month == 'September':
+        elif month.lower() == 'september':
             return 9
-        elif month == 'october' or month == 'October':
+        elif month.lower() == 'october':
             return 10
-        elif month == 'november' or month == 'November':
+        elif month.lower() == 'november':
             return 11
-        elif month == 'december' or month == 'December':
+        elif month.lower() == 'december':
             return 12
-        elif month == 1:
+        
+        
+        
+    def convertIntToMonth(self, month):
+        if month == 1:
             return "January"
         elif month == 2:
             return "February"
@@ -155,6 +158,16 @@ class ManageAppointments(MycroftSkill):
             return "December"
         else:
             return 0
+        
+    def convertOrdinalToCardinalNumber(self, ordinalString):
+        if ordinalString[1].isnumeric():
+            return int(ordinalString[0:2])
+        else:
+            return int(ordinalString[0])
+        
+        
+
+        
             
         
     def getUsername(self):
