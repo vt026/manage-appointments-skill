@@ -69,7 +69,7 @@ class ManageAppointments(MycroftSkill):
             return "This is not a day!"
         else:
             if(len(events_fetched)!=0):
-                result= "On the " +str(day) + ". of " + self.convertIntToMonth(month) + " you have the following appointments: "
+                result= "On the " +str(self.convertCardinalToOrdinalNumber(day)) + ". of " + self.convertIntToMonth(month) + " you have the following appointments: "
                 for event in events_fetched:
                     myEvents = event.instance.vevent
                     appointent_name = myEvents.summary.value
@@ -77,7 +77,7 @@ class ManageAppointments(MycroftSkill):
                 
                 return result
             else:
-                return "On the " +str(day) + ". of " + self.convertIntToMonth(month) + " you have no appointments."
+                return "On the " +str(self.convertCardinalToOrdinalNumber(day)) + ". of " + self.convertIntToMonth(month) + " you have no appointments."
     
     def loadEvents(self , fromYear, fromMonth, fromDay, toYear, toMonth, toDay):
         url = "https://" + self.getUsername() + ":" + self.getPassword() + "@next.social-robot.info/nc/remote.php/dav"
@@ -167,7 +167,7 @@ class ManageAppointments(MycroftSkill):
         
         
     
-    def convertCardinalNumberToOrdinalNumber(self,num):
+    def convertCardinalToOrdinalNumber(self,num):
         SUFFIXES = {1: 'st', 2: 'nd', 3: 'rd'}
         # I'm checking for 10-20 because those are the digits that
         # don't follow the normal counting scheme. 
