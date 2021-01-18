@@ -30,6 +30,8 @@ class ManageAppointments(MycroftSkill):
     @intent_file_handler('appointments.manage.newEvent.intent')
     def handle_createNewEvent(self,message):
         eventname = self.get_response('how do you want to name the nex appointment?')
+        startDate = self.response('When does the appointment start?')
+        emdDate = self.response('When does the appointment end?')
         self.speak_dialog("The name of the new appointment is: " + eventname)
         
 
