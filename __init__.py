@@ -36,13 +36,14 @@ class ManageAppointments(MycroftSkill):
         startDate = self.get_response('When does the appointment start?')
         startHour = self.getHour(startDate)
         startMin = self.getMinutes(startDate)
+        
         endDate = self.get_response('When does the appointment end?')
         endHour = self.getHour(endDate)
         endMin = self.getMinutes(endDate)
         
         
         self.createNewEvent(eventname,month,day,int(startHour),startMin,int(endHour),endMin)
-        self.speak_dialog("The appointment " + eventname + "was succesfully created")
+        self.speak_dialog("The appointment " + eventname + "  was succesfully created")
 
     def getNextAppointment(self):
         #returns the next appointment
