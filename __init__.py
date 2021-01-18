@@ -68,7 +68,7 @@ class ManageAppointments(MycroftSkill):
         if events_fetched == 0:
             return "This is not a day!"
         else:
-            if(len(events_fetched==0)):
+            if(len(events_fetched)==1):
                 result= "On the " +str(day) + ". of " + self.convertIntToMonth(month) + " you have the following appointment: "
 
                 myEvent = events_fetched[0].instance.vevent
