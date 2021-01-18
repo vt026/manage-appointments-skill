@@ -115,7 +115,7 @@ class ManageAppointments(MycroftSkill):
         
         #current timestamp
         DTcurr = datetime.today().strftime('%Y%m%dT%H%M%SZ')
-        UID = "neueID"
+        UID = DTcurr = datetime.today().strftime('%Y%m%dT%H%M%SZ')
         summary = name
         start = datetime(datetime.today().year, month, day, startHour-1, startMin)
         end = datetime(datetime.today().year, month, day, endHour-1, endMin)
@@ -232,25 +232,25 @@ END:VCALENDAR
             return int(ordinalString[0])
         
     def getHour(self, string):
-        if(string.startswith("at")):
-            result = string.replace("at","",1)
-            if(result[2] != ":"):
-                return result[0:3]
-            else:
-                return result[0:2]
+        
+        result = string
+        if(string.startswith("at ")):
+            result = string.replace("at ","",1)
+
+        result = result.split(":")
+        
+        return int(result[0])
             
     def getMinutes(self, string):
+        result = string
         if(string.startswith("at ")):
-            result = string.replace("at","",1)
-        
-        if len(result)==5:
-            result = result[3:5]
-        elif len(result) == 6:
-            result = result[4:6]
-        else:
-            result = "00"
-
-        return int(result)
+            result = string.replace("at ","",1)
+            
+        if(":" not in string):
+            return 0
+        else: 
+            result = result.split(":")
+            return int(result[1])
         
         
 
