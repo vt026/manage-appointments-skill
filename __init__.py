@@ -69,7 +69,7 @@ class ManageAppointments(MycroftSkill):
             return "This is not a day!"
         else:
             if(len(events_fetched)!=0):
-                result= "On the " +str(self.convertCardinalToOrdinalNumber(day)) + ". of " + self.convertIntToMonth(month) + " you have the following appointments: "
+                result= "On the " +str(day) + ". of " + self.convertIntToMonth(month) + " you have the following appointments: "
                 for event in events_fetched:
                     myEvents = event.instance.vevent
                     appointent_name = myEvents.summary.value
@@ -77,7 +77,47 @@ class ManageAppointments(MycroftSkill):
                 
                 return result
             else:
-                return "On the " +str(self.convertCardinalToOrdinalNumber(day)) + ". of " + self.convertIntToMonth(month) + " you have no appointments."
+                return "On the " +str(day) + ". of " + self.convertIntToMonth(month) + " you have no appointments."
+    
+    
+    def createNewEvent(self,name,month,day,startHour,startMin,endHour,endMin):
+        url = "https://" + self.getUsername() + ":" + self.getPassword() + "@next.social-robot.info/nc/remote.php/dav"
+        client = caldav.DAVClient(url)
+        principal = client.principal()
+        # get all available calendars (for this user)
+        myCalendar = principal.calendars()[0]
+        
+        #current timestamp
+        DTcurr = datetime.today().strftime('%Y%m%dT%H%M%SZ')
+        UID = "neueID"
+        summary = name
+        start = datetime(datetime.today().year, month, day, startHour-1, startMin)
+        end = datetime(datetime.today().year, month, day, endHour-1, endMin)
+        DTstart =   start.strftime('%Y%m%dT%H%M%SZ')
+        DTend = end.strftime('%Y%m%dT%H%M%SZ')
+        myNewEvent = """
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:ownCloud Calendar
+BEGIN:VEVENT
+CREATED;VALUE=DATE-TIME:""" + DTcurr + """
+UID:""" + UID + """
+LAST-MODIFIED;VALUE=DATE-TIME:""" + DTcurr + """
+DTSTAMP;VALUE=DATE-TIME:""" + DTcurr + """
+SUMMARY:""" + summary + """
+DTSTART;VALUE=DATE-TIME:""" + DTstart + """
+DTEND;VALUE=DATE-TIME:""" + DTend + """
+CLASS:PUBLIC
+END:VEVENT
+END:VCALENDAR
+ """
+        
+    
+        my_event = myCalendar.save_event(myNewEvent)
+        
+        return "The event "+ summary + " was created succesfully."
+    
+    
     
     def loadEvents(self , fromYear, fromMonth, fromDay, toYear, toMonth, toDay):
         url = "https://" + self.getUsername() + ":" + self.getPassword() + "@next.social-robot.info/nc/remote.php/dav"
@@ -166,21 +206,7 @@ class ManageAppointments(MycroftSkill):
             return int(ordinalString[0])
         
         
-    
-    def convertCardinalToOrdinalNumber(self,num):
-        SUFFIXES = {1: 'st', 2: 'nd', 3: 'rd'}
-        # I'm checking for 10-20 because those are the digits that
-        # don't follow the normal counting scheme. 
-        if 10 <= num % 100 <= 20:
-            suffix = 'th'
-        else:
-            # the second parameter is a default.
-            suffix = SUFFIXES.get(num % 10, 'th')
-        return str(num) + suffix
-        
-        
 
-        
             
         
     def getUsername(self):
