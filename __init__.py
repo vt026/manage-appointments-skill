@@ -68,16 +68,48 @@ class ManageAppointments(MycroftSkill):
                 else:
                     events_notAllDay.append(i)
             events_notAllDay.sort(key=lambda x: x.instance.vevent.dtstart.value)
+            events_allDay.sort(key=lambda x: x.instance.vevent.dtstart.value)
             
             for i in events_allDay:
-                print(i.instance.vevent.summary.value)
+                print( i.instance.vevent.summary.value)
             for i in events_notAllDay:
                 print(i.instance.vevent.summary.value)
             
-            if len(events_allDay) == 0 and len(events_notAllDay) == 0:
-                return "There are no upcoming events"         
+              
+            
+            if len(events_notAllDay) == 0 :
+                name = events_allDay[0].instance.vevent.summary.value
+                date = events_allDay[0].instance.vevent.dtstart.value.strftime("%B %d, %Y")
+                time = " all day long"
+                print("all day") 
+                return "Your next appointment is on " + date + time + " and is entitled " + name
+            elif len(events_allDay) == 0 :
+                next_appointment = events_notAllDay[0]
+                self.nextEvent= True
+                self.event = next_appointment.instance.vevent
+                self.appointent_name = self.event.summary.value
+                self.appointment_start = self.event.dtstart.value
+                self.appointment_date = self.appointment_start.strftime("%B %d, %Y")
+                self.appointment_time = " at " + str(self.appointment_start.hour+1) + self.appointment_start.strftime(":%M %p")
+                
+                return "Your next appointment is on " + self.appointment_date + self.appointment_time + " and is entitled " + self.appointent_name
+            
             else:
-                if len(events_notAllDay) != 0:
+                firstAllDay = events_allDay[0].instance.vevent.dtstart.value.strftime("%B %d, %Y")
+                firstNotAllDay = events_notAllDay[0].instance.vevent.dtstart.value.strftime("%B %d, %Y")
+                
+                print(firstAllDay)
+                print(firstNotAllDay)
+                print(firstAllDay > firstNotAllDay)
+                print(firstAllDay < firstNotAllDay)
+                
+                if(firstAllDay < firstNotAllDay):
+                    name = events_allDay[0].instance.vevent.summary.value
+                    date = events_allDay[0].instance.vevent.dtstart.value.strftime("%B %d, %Y")
+                    time = " all day long"
+                    print("all day") 
+                    return "Your next appointment is on " + date + time + " and is entitled " + name
+                else:
                     next_appointment = events_notAllDay[0]
                     self.nextEvent= True
                     self.event = next_appointment.instance.vevent
@@ -87,17 +119,12 @@ class ManageAppointments(MycroftSkill):
                     self.appointment_time = " at " + str(self.appointment_start.hour+1) + self.appointment_start.strftime(":%M %p")
                     
                     return "Your next appointment is on " + self.appointment_date + self.appointment_time + " and is entitled " + self.appointent_name
-                else:
-                    name = events_notAllDay[0].instance.vevent.summary.value
-                    date = events_notAllDay[0].instance.vevent.dtstart.strftime("%B %d, %Y")
-                    time = " all day long"
-                    print("all day") 
-                    return "Your next appointment is on " + date + time + " and is entitled " + name
+
         
         else:
             #there are no events in the calendar
             self.nextEvent = False
-            print("No events")
+            return "There are no upcoming events"
         
         
         
