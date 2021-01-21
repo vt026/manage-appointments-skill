@@ -46,20 +46,16 @@ class ManageAppointments(MycroftSkill):
         self.speak_dialog("The appointment " + eventname + "  was succesfully created")
     
     def getNextAppointment(self):
-        '''Notallday wird zuerst ausgegeben!
+        '''return a the string of the next appointment.
         
         '''
-        #returns the next appointment
         
+        # Events werden vom heutigen Tag bis 01.01.2024 abgerufen und sortiert
         events_fetched = self.loadEvents(datetime.today().year,datetime.today().month,datetime.today().day,2024,1,1)
         events_fetched.sort(key=lambda x: x.instance.vevent.dtstart.value.strftime("%Y-%m-%d"))
         
         
         if len(events_fetched)!=0:
-            events = []
-            for event in events_fetched:
-                if events_fetched[0].instance.vevent.dtstart.value.strftime("%Y-%m-%d") == event.instance.vevent.dtstart.value.strftime("%Y-%m-%d"):
-                    events.append(event)
             events_allDay = []
             events_notAllDay = []
             for i in events_fetched:
@@ -70,60 +66,38 @@ class ManageAppointments(MycroftSkill):
             events_notAllDay.sort(key=lambda x: x.instance.vevent.dtstart.value)
             events_allDay.sort(key=lambda x: x.instance.vevent.dtstart.value)
             
-            for i in events_allDay:
-                print( i.instance.vevent.summary.value)
-            for i in events_notAllDay:
-                print(i.instance.vevent.summary.value)
-            
-              
-            
             if len(events_notAllDay) == 0 :
                 name = events_allDay[0].instance.vevent.summary.value
                 date = events_allDay[0].instance.vevent.dtstart.value.strftime("%B %d, %Y")
                 time = " all day long"
-                print("all day") 
+                
                 return "Your next appointment is on " + date + time + " and is entitled " + name
             elif len(events_allDay) == 0 :
-                next_appointment = events_notAllDay[0]
-                self.nextEvent= True
-                self.event = next_appointment.instance.vevent
-                self.appointent_name = self.event.summary.value
-                self.appointment_start = self.event.dtstart.value
-                self.appointment_date = self.appointment_start.strftime("%B %d, %Y")
-                self.appointment_time = " at " + str(self.appointment_start.hour+1) + self.appointment_start.strftime(":%M %p")
+                name = events_notAllDay[0].instance.vevent.summary.value
+                time = events_notAllDay[0].instance.vevent.dtstart.value.strftime("%B %d, %Y")
+                date = " at " + str(events_notAllDay[0].instance.vevent.dtstart.value.hour+1) + events_notAllDay[0].instance.vevent.dtstart.value.strftime(":%M %p")
                 
-                return "Your next appointment is on " + self.appointment_date + self.appointment_time + " and is entitled " + self.appointent_name
-            
+                return "Your next appointment is on " + date + time + " and is entitled " + name
             else:
-                firstAllDay = events_allDay[0].instance.vevent.dtstart.value.strftime("%B %d, %Y")
-                firstNotAllDay = events_notAllDay[0].instance.vevent.dtstart.value.strftime("%B %d, %Y")
+                firstAllDay = events_allDay[0].instance.vevent.dtstart.value.strftime("%Y-%m-%d")
+                firstNotAllDay = events_notAllDay[0].instance.vevent.dtstart.value.strftime("%Y-%m-%d")
                 
-                print(firstAllDay)
-                print(firstNotAllDay)
-                print(firstAllDay > firstNotAllDay)
+                print(firstAllDay == firstNotAllDay)
                 print(firstAllDay < firstNotAllDay)
+                print(firstAllDay > firstNotAllDay)
                 
-                if(firstAllDay < firstNotAllDay):
+                if firstAllDay == firstNotAllDay or firstAllDay < firstNotAllDay:
                     name = events_allDay[0].instance.vevent.summary.value
                     date = events_allDay[0].instance.vevent.dtstart.value.strftime("%B %d, %Y")
                     time = " all day long"
-                    print("all day") 
-                    return "Your next appointment is on " + date + time + " and is entitled " + name
+                    return "Your next appointment is on " + date + time + " and is entitled " + name                
                 else:
-                    next_appointment = events_notAllDay[0]
-                    self.nextEvent= True
-                    self.event = next_appointment.instance.vevent
-                    self.appointent_name = self.event.summary.value
-                    self.appointment_start = self.event.dtstart.value
-                    self.appointment_date = self.appointment_start.strftime("%B %d, %Y")
-                    self.appointment_time = " at " + str(self.appointment_start.hour+1) + self.appointment_start.strftime(":%M %p")
-                    
-                    return "Your next appointment is on " + self.appointment_date + self.appointment_time + " and is entitled " + self.appointent_name
-
-        
+                    name = events_notAllDay[0].instance.vevent.summary.value
+                    date = events_notAllDay[0].instance.vevent.dtstart.value.strftime("%B %d, %Y")
+                    time = " at " + str(events_notAllDay[0].instance.vevent.dtstart.value.hour+1) + events_notAllDay[0].instance.vevent.dtstart.value.strftime(":%M %p")
+                    return "Your next appointment is on " + date + time + " and is entitled " + name
+    
         else:
-            #there are no events in the calendar
-            self.nextEvent = False
             return "There are no upcoming events"
         
         
@@ -340,6 +314,10 @@ END:VCALENDAR
         
         password = data[1]
         return password
+    
+test = ManageAppointments()
+print(test.getAppointmentsOnDate(22, 1))
+print(test.getNextAppointment())
 
 def create_skill():
     return ManageAppointments()
