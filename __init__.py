@@ -9,26 +9,46 @@ from caldav.elements import dav
 class ManageAppointments(MycroftSkill):
         
     def __init__(self):
-        MycroftSkill.__init__(self)        
-              
+        '''__init__(self)
+            
+        This method is the constructor. It is called when the Skill is first constructed. 
+
+        '''
+        MycroftSkill.__init__(self)      
+        
+    @intent_file_handler('appointments.manage.intent')
+    def handle_appointments_manage(self, message):
+        '''handle_appointments_manage(self, message)
+    
+        The answer you receive for the question: What is my next appointment? 
+        Returned by calling getNextAppointment() 
+        
+        '''
+        self.speak_dialog(self.getNextAppointment())         
         
     @intent_handler('appointments.manage.date.intent')
     def handle_date_search(self, message):
+        '''handle_date_search(self, message)
+    
+        The answer you receive for the question: 
+        What appointments do I have on the {day} of {month}?
+        Returned by calling getAppointmentsOnDate() 
+        
+        '''
         day = self.convertOrdinalToCardinalNumber(message.data.get('day'))
         month = self.convertMonthToInt(message.data.get('month'))
         if (day is not None and month is not None):
             self.speak_dialog(self.getAppointmentsOnDate(int(day),int(month)))
         else:
-            self.speak_dialog("hello")
-        
-
-    @intent_file_handler('appointments.manage.intent')
-    def handle_appointments_manage(self, message):
-        self.speak_dialog(self.getNextAppointment())
-        
+            self.speak_dialog("Please tell me the day and the month")     
         
     @intent_file_handler('appointments.manage.newEvent.intent')
     def handle_createNewEvent(self,message):
+        '''handle_createNewEvent(self,message)
+        
+        Dialog called for: Create a new appointment on the {day} of {month}.
+        
+        '''
         day = self.convertOrdinalToCardinalNumber(message.data.get('day'))
         month = self.convertMonthToInt(message.data.get('month'))
         eventname = self.get_response('how do you want to name the nex appointment?')
@@ -46,7 +66,10 @@ class ManageAppointments(MycroftSkill):
         self.speak_dialog("The appointment " + eventname + "  was succesfully created")
     
     def getNextAppointment(self):
-        '''return a the string of the next appointment.
+        '''getNextAppointment(self)
+        
+        return the string of the answer for the next appointment.
+        
         
         '''
         
@@ -74,8 +97,8 @@ class ManageAppointments(MycroftSkill):
                 return "Your next appointment is on " + date + time + " and is entitled " + name
             elif len(events_allDay) == 0 :
                 name = events_notAllDay[0].instance.vevent.summary.value
-                time = events_notAllDay[0].instance.vevent.dtstart.value.strftime("%B %d, %Y")
-                date = " at " + str(events_notAllDay[0].instance.vevent.dtstart.value.hour+1) + events_notAllDay[0].instance.vevent.dtstart.value.strftime(":%M %p")
+                date = events_notAllDay[0].instance.vevent.dtstart.value.strftime("%B %d, %Y")
+                time = " at " + str(events_notAllDay[0].instance.vevent.dtstart.value.hour+1) + events_notAllDay[0].instance.vevent.dtstart.value.strftime(":%M %p")
                 
                 return "Your next appointment is on " + date + time + " and is entitled " + name
             else:
@@ -104,8 +127,8 @@ class ManageAppointments(MycroftSkill):
         
         
     def getAppointmentsOnDate(self,day,month):
-        year = datetime.today().year
         
+        year = datetime.today().year
         events_fetched = self.loadEvents(year,month,day,year,month,day)
         events_allDay = []
         events_notAllDay = []
@@ -116,7 +139,7 @@ class ManageAppointments(MycroftSkill):
                 events_notAllDay.append(i)
         events_notAllDay.sort(key=lambda x: x.instance.vevent.dtstart.value)
         
-        if events_fetched == 0:
+        if events_fetched == -1:
             return "This is not a day!"
         else:
             if len(events_allDay) == 0 and len(events_notAllDay) == 0:
@@ -212,7 +235,7 @@ END:VCALENDAR
                 start=datetime(fromYear,fromMonth,fromDay), end=datetime(toYear,toMonth,toDay+1), expand=True)
             return events_fetched
         except ValueError:
-            return 0
+            return -1
    
     def convertMonthToInt(self, month):
         if month.lower() == 'january':
@@ -314,10 +337,6 @@ END:VCALENDAR
         
         password = data[1]
         return password
-    
-test = ManageAppointments()
-print(test.getAppointmentsOnDate(22, 1))
-print(test.getNextAppointment())
 
 def create_skill():
     return ManageAppointments()
