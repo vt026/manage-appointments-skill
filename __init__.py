@@ -51,7 +51,7 @@ class ManageAppointments(MycroftSkill):
         '''
         day = self.convertOrdinalToCardinalNumber(message.data.get('day'))
         month = self.convertMonthToInt(message.data.get('month'))
-        eventname = self.get_response('how do you want to name the nex appointment?')
+        eventname = self.get_response('how do you want to name the appointment?')
         
         startDate = self.get_response('When does the appointment start?')
         startHour = self.getHour(startDate)
@@ -174,7 +174,19 @@ class ManageAppointments(MycroftSkill):
                 return result
     
     
+    
     def createNewEvent(self,name,month,day,startHour,startMin,endHour,endMin):
+        """create a new event in the Calendar
+        
+         Parameters:
+                    name (string): the name of the new event
+                    month (int): the month of the new event
+                    day (int): the day of the new event
+                    startHour (int): the Hour of the startTime of the new Event
+                    startMin (int): the Minutes of the startTime of the new Event
+                    endHour (int): the Hour of the endTime of the new Event
+                    endMin (int): the Minutes of the endMinutes of the new Event
+        """
         url = "https://" + self.getUsername() + ":" + self.getPassword() + "@next.social-robot.info/nc/remote.php/dav"
         client = caldav.DAVClient(url)
         principal = client.principal()
@@ -207,9 +219,9 @@ END:VCALENDAR
  """
         
     
-        my_event = myCalendar.save_event(myNewEvent)
+        myCalendar.save_event(myNewEvent)
         
-        return "The event "+ summary + " was created succesfully."
+    
     
     
     
@@ -329,6 +341,9 @@ END:VCALENDAR
             data = file.read().splitlines()
         
         username = data[0]
+        
+        self.crea
+        
         return username
     
     def getPassword(self):
@@ -340,6 +355,8 @@ END:VCALENDAR
 
 def create_skill():
     return ManageAppointments()
+
+
 
 
 
