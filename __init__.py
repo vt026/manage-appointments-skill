@@ -177,7 +177,7 @@ class ManageAppointments(MycroftSkill):
     
     def createNewEvent(self,name,month,day,startHour,startMin,endHour,endMin):
         """create a new event in the Calendar
-        
+    
          Parameters:
                     name (string): the name of the new event
                     month (int): the month of the new event
@@ -341,8 +341,6 @@ END:VCALENDAR
             data = file.read().splitlines()
         
         username = data[0]
-        
-        self.crea
         
         return username
     
