@@ -68,8 +68,7 @@ class ManageAppointments(MycroftSkill):
     def getNextAppointment(self):
         '''getNextAppointment(self)
         
-        return the string of the answer for the next appointment.
-        
+        :return the string of the answer for the next appointment.
         
         '''
         
@@ -123,10 +122,15 @@ class ManageAppointments(MycroftSkill):
         else:
             return "There are no upcoming events"
         
-        
-        
-        
     def getAppointmentsOnDate(self,day,month):
+        '''getAppointmentsOnDate(self,day,month)
+        
+        Parameter:
+                  day (int): day 
+                  month (int): month
+        :return the string of the answer with the Events of a certain date
+        
+        '''
         
         year = datetime.today().year
         events_fetched = self.loadEvents(year,month,day,year,month,day)
@@ -173,10 +177,8 @@ class ManageAppointments(MycroftSkill):
                 
                 return result
     
-    
-    
     def createNewEvent(self,name,month,day,startHour,startMin,endHour,endMin):
-        """create a new event in the Calendar
+        '''create a new event in the Calendar
     
          Parameters:
                     name (string): the name of the new event
@@ -186,7 +188,7 @@ class ManageAppointments(MycroftSkill):
                     startMin (int): the Minutes of the startTime of the new Event
                     endHour (int): the Hour of the endTime of the new Event
                     endMin (int): the Minutes of the endMinutes of the new Event
-        """
+        '''
         url = "https://" + self.getUsername() + ":" + self.getPassword() + "@next.social-robot.info/nc/remote.php/dav"
         client = caldav.DAVClient(url)
         principal = client.principal()
@@ -221,11 +223,21 @@ END:VCALENDAR
     
         myCalendar.save_event(myNewEvent)
         
-    
-    
-    
-    
     def loadEvents(self , fromYear, fromMonth, fromDay, toYear, toMonth, toDay):
+        '''loadEvents(self , fromYear, fromMonth, fromDay, toYear, toMonth, toDay)
+        
+        load the calander and return a container with the events between a start date and an end date
+        Parameters:
+                    fromYear (int): year of the start date
+                    fromMonth (int): month of the start date
+                    fromDay (int): day of the start date
+                    toYear (int): year of the end date
+                    toMonth (int): month of the end date
+                    toDay (int): day of the end date
+        :return a container with the events of a certain day 
+        
+        '''
+        
         url = "https://" + self.getUsername() + ":" + self.getPassword() + "@next.social-robot.info/nc/remote.php/dav"
         client = caldav.DAVClient(url)
         principal = client.principal()
@@ -250,6 +262,13 @@ END:VCALENDAR
             return -1
    
     def convertMonthToInt(self, month):
+        '''convertMonthToInt(self, month)
+        
+        Parameter:
+                  month (string): month which is converted to int
+        :return the number of a month
+        
+        '''
         if month.lower() == 'january':
             return 1
         elif month.lower() == 'february':
@@ -275,9 +294,14 @@ END:VCALENDAR
         elif month.lower() == 'december':
             return 12
         
-        
-        
     def convertIntToMonth(self, month):
+        '''convertIntToMonth(self, month)
+        
+        Parameter:
+                  month (int): month which is converted to string
+        :return the string of a month
+        
+        '''
         if month == 1:
             return "January"
         elif month == 2:
@@ -306,12 +330,26 @@ END:VCALENDAR
             return 0
         
     def convertOrdinalToCardinalNumber(self, ordinalString):
+        '''convertOrdinalToCardinalNumber(self, ordinalString)
+        
+        Parameter:
+                  ordinalString (string): ordinal string converted to int
+        :return the cardinalNumber
+        
+        '''
         if ordinalString[1].isnumeric():
             return int(ordinalString[0:2])
         else:
             return int(ordinalString[0])
         
     def getHour(self, string):
+        '''getHour(self, string)
+        
+        Parameter:
+                  string (string): string of time
+        :return the hour string
+        
+        '''
         
         result = string
         if(string.startswith("at ")):
@@ -322,6 +360,13 @@ END:VCALENDAR
         return int(result[0])
             
     def getMinutes(self, string):
+        '''getMinutes(self, string)
+        
+        Parameter:
+                  string (string): string of time
+        :return minute string
+        
+        '''
         result = string
         if(string.startswith("at ")):
             result = string.replace("at ","",1)
@@ -332,11 +377,13 @@ END:VCALENDAR
             result = result.split(":")
             return int(result[1])
         
-        
-
-            
-        
     def getUsername(self):
+        '''getUsername(self)
+        
+        parse the username of a text file on the device
+        :return username
+        
+        '''
         with open('pw.txt','r') as file:
             data = file.read().splitlines()
         
@@ -345,6 +392,12 @@ END:VCALENDAR
         return username
     
     def getPassword(self):
+        '''getPassword(self)
+        
+        parse the password of a text file on the device
+        :return password
+        
+        '''
         with open('pw.txt','r') as file:
             data = file.read().splitlines()
         
